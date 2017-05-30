@@ -1,0 +1,191 @@
+<!--
+  The Rescue Field Designer - Quick and Dirty
+  To do:
+
+
+
+-->
+
+<html>
+  <head>
+    <style>
+      table.rescue-field {
+          border-collapse: collapse;
+          margin-left: 30px;
+      }
+      td.rescue-field, th.rescue-field {
+          border: 1px solid black;
+      }
+      td.rescue-field {
+          width:  100px;
+          height: 100px;
+		  text-align: center;
+		  vertical-align: center;
+      }
+
+      a.rescue-field  {
+        text-decoration: none;
+      }
+	  
+      p {
+        margin-left: 30px;
+      }
+    </style>
+	<script>
+	  var fieldImageIndexList = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0';
+	  var fieldRotationIndexList = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0';
+	  var imageCount = 16; // Total number of image sets to toggle between
+	  var colCount = 4;   // Number of columns in the HTML grid
+	  
+	  function token(aString, aToken, aPosition){
+	    var a = aString.split(aToken);
+		return a[aPosition];
+	  }
+	  
+	  function calcNextImageIndex(aCurrentImageIndex){
+	    if (aCurrentImageIndex >= imageCount - 1){
+		  return 0;
+		} else {
+		  return aCurrentImageIndex + 1;
+		}	  
+	  }
+
+	  function calcNextRotationIndex(aCurrentRotationIndex){
+	    if (aCurrentRotationIndex >= 3){
+		  return 0;
+		} else {
+		  return aCurrentRotationIndex + 1;
+		}	  
+	  }
+	  
+	  function imageIndexToFileName(aIndex, aRotate){
+        var aFileName = aIndex+"";
+        while (aFileName.length < 2) aFileName = "0" + aFileName;
+        return 'tile-' + aFileName + '-' + aRotate + '.png';	 
+	  }
+	  
+	  function saveFieldState(aRow, aCol, aImageIndex){
+	    var index = aRow * colCount + aCol;
+	    var tmp = fieldImageIndexList.split(',');
+		var result = '';
+		if (tmp.length < index + 1){
+		  tmp.length = index + 1;
+		}
+		tmp[index] = aImageIndex; 
+	    result = tmp.join();
+		fieldImageIndexList = result;
+	  }
+	  
+	  function saveRotationState(aRow, aCol, aRotationIndex){
+	    var index = aRow * colCount + aCol;
+	    var tmp = fieldRotationIndexList.split(',');
+		var result = '';
+		if (tmp.length < index + 1){
+		  tmp.length = index + 1;
+		}
+		tmp[index] = aRotationIndex; 
+	    result = tmp.join();
+		fieldRotationIndexList = result;
+	  }
+	  
+	  function cellReferenceToTileIndex(aRow, aCol){
+	    var index = aRow * colCount + aCol;
+		return parseInt(token(fieldImageIndexList, ',', index));
+	  }
+	  
+	  function cellReferenceToRotationIndex(aRow, aCol){
+	    var index = aRow * colCount + aCol;
+		return parseInt(token(fieldRotationIndexList, ',', index));
+	  }
+	  
+	  function imageToGrid(aRow, aCol, aTileIndex, aRotationIndex){
+       var cellID = aRow + '-' + aCol;
+       var imgName = imageIndexToFileName(aTileIndex, aRotationIndex);	   
+       var img = document.getElementById(cellID);
+       var url = imgName;
+       img.src = url;
+	  }
+	  
+	  function toggleImage(aRow, aCol){		
+	   var tileIndex = cellReferenceToTileIndex(aRow, aCol);
+           tileIndex = calcNextImageIndex(tileIndex);
+	   var rotationIndex = cellReferenceToRotationIndex(aRow, aCol);
+	   saveFieldState(aRow, aCol, tileIndex);
+       imageToGrid(aRow, aCol, tileIndex, rotationIndex); 
+	  }
+
+	  function rotateImage(aRow, aCol){		
+	   var tileIndex = cellReferenceToTileIndex(aRow, aCol);
+	   var rotationIndex = cellReferenceToRotationIndex(aRow, aCol);
+           rotationIndex = calcNextRotationIndex(rotationIndex);
+	   saveRotationState(aRow, aCol, rotationIndex);
+       imageToGrid(aRow, aCol, tileIndex, rotationIndex); 
+	  }
+	  
+	  
+	</script>
+  </head>
+  <body>
+    <h1>Rescue field designer</h1>
+	<h2>A quick and dirty solution</h2>
+	<p>Click on a &rarr; symbol to select a tile image.</p>
+	<p> Click on a &#8635; symbol to rotate a tile image.</p>
+    <table class='rescue-field'>
+	  <tr class='rescue-field'>
+	    <td class='rescue-field'><img id='0-0' src='tile-00-0.png' height='100' width='100'><a class='rescue-field' href='javascript:rotateImage(0, 0);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(0, 0);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='0-1' src='tile-00-0.png' height='100' width='100'><a class='rescue-field' href='javascript:rotateImage(0, 1);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(0, 1);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='0-2' src='tile-00-0.png' height='100' width='100'><a class='rescue-field' href='javascript:rotateImage(0, 2);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(0, 2);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='0-3' src='tile-00-0.png' height='100' width='100'><a class='rescue-field' href='javascript:rotateImage(0, 3);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(0, 3);'>&rarr;</a></td>
+	  <tr>
+	  
+	  <tr class='rescue-field'>
+	    <td class='rescue-field'><img id='1-0' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(1, 0);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(1, 0);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='1-1' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(1, 1);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(1, 1);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='1-2' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(1, 2);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(1, 2);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='1-3' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(1, 3);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(1, 3);'>&rarr;</a></td>
+
+	  <tr class='rescue-field'>
+	    <td class='rescue-field'><img id='2-0' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(2, 0);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(2, 0);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='2-1' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(2, 1);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(2, 1);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='2-2' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(2, 2);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(2, 2);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='2-3' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(2, 3);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(2, 3);'>&rarr;</a></td>
+	  <tr>
+	  
+	  <tr class='rescue-field'>
+	    <td class='rescue-field'><img id='3-0' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(3, 0);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(3, 0);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='3-1' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(3, 1);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(3, 1);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='3-2' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(3, 2);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(3, 2);'>&rarr;</a></td>
+	    <td class='rescue-field'><img id='3-3' src='tile-00-0.png' height='100' width='100'><a  class='rescue-field' href='javascript:rotateImage(3, 3);'>&#8635;</a>&nbsp;&nbsp;<a class='rescue-field' href='javascript:toggleImage(3, 3);'>&rarr;</a></td>
+	  <tr>
+    </table>	
+    <p></p> 
+    <hr>		  
+	
+	<h2>To do</h2>
+	<ul>
+    <li>City Limits and See Saw tiles;</li>
+    <li>Build a page based on fieldImageIndexList and fieldRotationIndexList as GET params;</li>
+	<li>Button to create a link with fieldImageIndexList and fieldRotationIndexList as get params;</li>
+	<li>Fields for Heading & Sub Heading;</li>
+	<li>Button to Copy URL, with fieldImageIndexList and fieldRotationIndexList as GET params;</li>
+	<li>Download as A3 or A4 PDF;</li>
+	<li>Option to change grid size;</li>
+	<li>Download as PDF;</li>
+	<li>Rather than links to toggle or rotate images, pick from a popup window, or better still, drag and drop from a palette of images;</li>
+	<li>Validate robot path through images;</li>
+	<li>Export or download as a series of images by robot path for import into the Rescue scoring system;</li>
+	<li>Calculate points available in the field;</li>
+	<li>Keep track of tile available in a full set. Report if more than one set will be needed to complete the layout;</li>    
+	<li>3D Field layouts;</li></ul>
+
+    <hr>		  
+	
+	<p><small>
+          <a href="http://choosealicense.com/licenses/gpl-3.0/" target="_default">
+          Free, open source</a> online rescue field layout designer by 
+          <a href="http://www.clubengineer.org/robocup.html" target="_default">Club Engineer</a>.</br>
+          You can download the source from <a href="https://github.com/rcjaustralia/rcj-rescue-field-designer" target="_default">GitHub here.</a></small></p>
+    <hr>		  
+		  
+  </body>
+</html>
